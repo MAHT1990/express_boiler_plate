@@ -1,9 +1,9 @@
 /* THIRD-PARTY MODULES */
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm"
-import { Comment } from "./Comment.entity.mysql";
+import { CommentMySQLEntity } from "./Comment.entity.mysql";
 
 @Entity()
-export class Post {
+export class PostMySQLEntity {
 
     @PrimaryGeneratedColumn()
     id: number
@@ -23,7 +23,7 @@ export class Post {
     @UpdateDateColumn() 
     updatedAt: Date
 
-    @OneToMany(() => Comment, comment => comment.post)
-    comments: Comment[];
+    @OneToMany(() => CommentMySQLEntity, comment => comment.post)
+    comments: CommentMySQLEntity[];
 
 }

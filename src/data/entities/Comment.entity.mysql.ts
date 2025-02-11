@@ -1,9 +1,9 @@
 /* THIRD-PARTY MODULES */
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm"
-import { Post } from "./Post.entity.mysql";
+import { PostMySQLEntity } from "./Post.entity.mysql";
 
 @Entity()
-export class Comment {
+export class CommentMySQLEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -21,11 +21,11 @@ export class Comment {
     
     @Column()
     postId: number;
-    
-    @ManyToOne(() => Post, post => post.comments, {
+
+    @ManyToOne(() => PostMySQLEntity, post => post.comments, {
         onDelete: 'CASCADE',
     })
     @JoinColumn({ name: 'postId' })
-    post: Post;
+    post: PostMySQLEntity;
 
 } 
