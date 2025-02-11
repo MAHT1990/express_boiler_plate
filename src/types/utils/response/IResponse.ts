@@ -38,7 +38,7 @@ export interface IResponseMaker {
 export interface IResponseCodeInfo {
     [key: string]: {
         status: number;
-        code: number;
+        code: string;
         message: string;
     };
 };

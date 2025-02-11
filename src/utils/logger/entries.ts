@@ -29,7 +29,7 @@ export const makeRequestLogEntry: (params: ILogParams) => LogEntry =
 
     let additionalInfo: object;
 
-    /* Error Intance 인 경우 */
+    /* Error Instance 인 경우 */
     if (params.info instanceof Error) {
         additionalInfo = {
             level: "error",

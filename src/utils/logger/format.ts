@@ -16,6 +16,7 @@ class RequestFormat {
     private stringFormatter(info: TransformableInfo): string {
 
         const baseString = `[${info.timestamp}] ${info.ip || ""} ${info.status || ""} ${info.method || "" } ${info.path || "" } ${info.level.toUpperCase()}`;
+        
         const baseStringSub = info.label
             ? `: (${info.label})${info.message}`
             : `: ${info.message}`;
@@ -39,6 +40,7 @@ class RequestFormat {
             bodyString,
             stackString,
         };
+        
         return Object.values(formats).filter(Boolean).join("\n");
     }
 

@@ -18,7 +18,6 @@ export default class CustomTransport extends Transport {
         });
 
         /* CUSTOMIZE log Transport */
-
         callback();
     }
 }
