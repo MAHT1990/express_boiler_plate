@@ -5,9 +5,6 @@ import { DataSource, DataSourceOptions } from "typeorm";
 // INTERFACES
 import { IDataSourceConfig } from "../types/configs/dataSource";
 
-// ENTITIES
-import { User } from "../data/User";
-
 
 @injectable()
 export class DataSourceConfig implements IDataSourceConfig {
@@ -52,15 +49,11 @@ export class DataSourceConfig implements IDataSourceConfig {
                 "bigNumberStrings": false
             },
             subscribers: [],
-            entities: [User],
+            entities: [
+                `${__dirname}/../data/entities/*.entity.mysql.{ts,js}`
+            ],
             cache: {
-                type: "redis",
-                options: {
-                    socket: {
-                        host: process.env.REDIS_HOST,
-                        port: parseInt(process.env.REDIS_PORT),
-                    }
-                },
+                /* implement cache options here like Redis*/
             }
         };
     }

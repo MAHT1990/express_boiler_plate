@@ -1,5 +1,5 @@
 /* THIRD-PARTY MODULES */
-import * as Transport from "winston-transport";
+import { Transport } from "winston-transport";
 
 
 /**

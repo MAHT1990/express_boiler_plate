@@ -5,8 +5,10 @@ import express, { Application } from "express";
 /* CONTAINERS */
 import { CONFIGS } from "../containers/symbols/configs";
 
-/* UTILS */
+/* LOADERS */
 import loaders from "../loaders";
+
+/* UTILS */
 import * as Logger from "../utils/logger";
 
 /* INTERFACES */
@@ -26,7 +28,6 @@ export class AppConfig implements IAppConfig {
         @inject(CONFIGS.DataSourceConfig) private readonly dataSourceConfig: IDataSourceConfig,
     ) {
         this.app = express();
-        this.port = parseInt(this.envConfig.PORT || "3000");
     }
 
     public async bootstrap(): Promise<void> {
@@ -48,6 +49,7 @@ export class AppConfig implements IAppConfig {
             Logger.info({ info: { message: "Express Initialized" }});
 
             /* Start Server */
+            this.port = parseInt(process.env.PORT);
             this.app.listen(this.port, () => {
                 Logger.info({ info: { message: `Server is running on port ${this.port}` }});
             })
