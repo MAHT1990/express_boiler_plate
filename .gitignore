@@ -1,6 +1,23 @@
+# MAC
+.DS_Store
+
+# IDE
 .idea/
 .vscode/
+
+# NODE MODULES
 node_modules/
+
+# BUILD
 build/
+
+# TEMP
 tmp/
 temp/
+
+# ENV
+.env
+.env.local
+.env.development
+.env.production
+.env.test
