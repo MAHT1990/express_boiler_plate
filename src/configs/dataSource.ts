@@ -1,8 +1,8 @@
-// THIRD_PARTY
+/* THIRD-PARTY MODULES */
 import { injectable } from "inversify";
 import { DataSource, DataSourceOptions } from "typeorm";
 
-// INTERFACES
+/* INTERFACES */
 import { IDataSourceConfig } from "../types/configs/dataSource";
 
 
@@ -38,9 +38,9 @@ export class DataSourceConfig implements IDataSourceConfig {
             type: "mysql",
             host: process.env.MYSQL_HOST_MASTER,
             port: parseInt(process.env.MYSQL_PORT),
-            username: process.env.MYSQL_USER_INSERT,
-            password: process.env.MYSQL_PW_INSERT,
-            database: process.env.MYSQL_DB_PROD,
+            username: process.env.MYSQL_USER_MASTER,
+            password: process.env.MYSQL_PW_MASTER,
+            database: process.env.MYSQL_DB_MASTER,
             synchronize: false,
             logging: true,
             charset: "utf8mb4",
@@ -62,8 +62,8 @@ export class DataSourceConfig implements IDataSourceConfig {
         this.SLAVE_DATASOURCE_OPTIONS = Object.assign(
             {}, this.MASTER_DATASOURCE_OPTIONS, {
                 host: process.env.MYSQL_HOST_SLAVE,
-                username: process.env.MYSQL_USER_SELECT,
-                password: process.env.MYSQL_PW_SELECT,
+                username: process.env.MYSQL_USER_SLAVE,
+                password: process.env.MYSQL_PW_SLAVE,
             }
         );
     }
