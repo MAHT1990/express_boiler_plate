@@ -24,11 +24,10 @@ export interface ISwaggerApiRequestBody {
     content: {
         "application/json": {
             schema: {
-                type: string;
                 properties: {
                     [key: string]: {
                         type: string;
-                        description: string;
+                        description?: string;
                         items?: object;
                         example?: number | string | object | Array<any>;
                     }
