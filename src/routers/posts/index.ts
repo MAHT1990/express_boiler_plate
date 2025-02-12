@@ -17,5 +17,5 @@ export default (parentRouter: Router) => {
     childRouter.get("/", createRequestHandler(async (req: Request, res: Response) => {
         const queries = req.query;
         // return await 
-    });
+    }));
 }
