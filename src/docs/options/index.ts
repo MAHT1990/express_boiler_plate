@@ -90,7 +90,7 @@ export class SwaggerOptionHandler {
                 definitions: require("./definitions").default,
                 components: {
                     securitySchemes: require("./securities").default,
-                    schemas: require("./schemas").default,
+                    schemas: require("./components").default,
                 },
                 tags: require("./tags").default,
                 paths: {},

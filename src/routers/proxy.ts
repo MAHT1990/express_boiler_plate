@@ -113,7 +113,7 @@ export const createRouterProxy = (
     
     /* parentRouter OR 최상위 Router 에 router 추가 */
     if (parentRouter) parentRouter.use(...argArr);
-    else router.use(argArr);
+    else router.use(...argArr);
 
     const routerProxy = new Proxy(router, {
         get(router, prop, receiver) {
