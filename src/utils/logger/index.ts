@@ -39,7 +39,11 @@ class Logger {
 
     private setTransports(): void {
         if (this.type === "request") {
-            /* 요청 로그 전송 클래스 생성 */
+            this.logTransports = [
+                new transports.Console(),
+                
+                /* 요청 로그 전송 클래스 생성 */
+            ]
         }
     }
 
