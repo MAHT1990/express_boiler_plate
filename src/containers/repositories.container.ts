@@ -2,7 +2,7 @@
 import { Container } from "inversify";
 
 /* CONTAINERS */
-import { ConfigsContainer } from "./configs.container";
+import { configsContainer, ConfigsContainer } from "./configs.container";
 
 /* SYMBOLS */
 import { REPOSITORIES } from "./symbols/repositories";
@@ -26,3 +26,5 @@ export class RepositoriesContainer extends Container {
         this.bind<CommentMySQLRepository>(REPOSITORIES.CommentMySQLRepository).to(CommentMySQLRepository);
     }
 }
+
+export const repositoriesContainer = new RepositoriesContainer(configsContainer);
