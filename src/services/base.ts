@@ -22,7 +22,7 @@ import { IResponse, IResponseMaker } from "../types/utils/response/IResponse";
 import { CreateDto, FindDto, UpdateDto } from "../types/dto/base.dto";
 
 
-export default abstract class BaseService<TargetEntity> extends EventEmitter {
+export abstract class BaseService<TargetEntity> extends EventEmitter {
 
     protected readonly masterSource: DataSource;
 
@@ -113,6 +113,230 @@ export default abstract class BaseService<TargetEntity> extends EventEmitter {
         }
 
         return this.serviceResponse({ type: "fetched", data: result });
+    }
+
+    /**
+     * id(Primary Key)와 relation 을 받아서 데이터를 조회
+     *
+     * @params id
+     *  - number - 단일 객체의 id (ex. 28)
+     *  - object - multi PK 를 사용할 경우 object 를 사용한다. (ex. { id: 28, name: "test" })
+     *  - string - id 가 여러개일 경우, 콤마(,)로 구분하여 문자열로 전달한다. (ex. "111,22,33,4")
+     *
+     * @param params.select - 조회할 컬럼을 설정할 때 사용
+     * - ex. ["id", "name"]
+     * - ex. { id: true, name: true }
+     *
+     * @param params.relations - 관계를 설정할 때 사용
+     * - ex. ["user", "user.profile"]
+     * - ex. { user: true, profile: { phone: true }}
+     *
+     * @param params.callback 콜백 함수 (data: TargetEntity | TargetEntity[]) => Promise<TargetEntity | TargetEntity[]>
+     */
+    public async findById(
+        id: number | string | FindDto<TargetEntity> | FindDto<TargetEntity>[],
+        params?: {
+            select?: string[] | FindOptionsSelect<TargetEntity>;
+            relations?: string[] | FindOptionsRelations<TargetEntity>;
+            callback?: (data: TargetEntity | TargetEntity[]) => any;
+            withDeleted?: boolean;
+        },
+    ): Promise<IResponse> {
+        let findOption: FindManyOptions;
+        let isMultiple = false;
+
+        /* id가 배열일 경우 */
+        if (Array.isArray(id)) {
+            findOption = { where: id };
+            isMultiple = id.length > 1;
+        }
+
+        /* id가 객체일 경우 */
+        if (!Array.isArray(id) && typeof id === "object") {
+            findOption = { where: id };
+        }
+
+        /* id가 ( , )로 구분된 문자열일 경우: "1,2,3,4" */
+        if (typeof id === "string") {
+            const ids = String(id)
+                .split(",")
+                .map(id => id.trim());
+
+            if (ids.some(id => isNaN(Number(id)))) {
+                return this.serviceResponse({ type: "invalid" });
+            }
+
+            if (ids.length > 1) {
+                findOption = { where: { _id: In(ids.map(Number)) } };
+                isMultiple = true;
+            } else {
+                findOption = { where: { _id: Number(id) } };
+            }
+        }
+
+        /* id가 숫자일 경우 */
+        if (typeof id === "number") {
+            findOption = { where: { _id: id } };
+        }
+
+        findOption.withDeleted = params?.withDeleted;
+
+        this.setFindOptionByRelations(findOption, params?.relations);
+        this.setFindOptionBySelect(findOption, params?.select);
+
+        const rawData: TargetEntity[] = await this.repositorySlave.find(findOption);
+
+        if (rawData.length === 0) return this.serviceResponse({ type: "notFound" });
+
+        let result: TargetEntity | TargetEntity[] = isMultiple ? rawData : rawData[0];
+
+        if (params?.callback) result = await params.callback(result);
+
+        return this.serviceResponse({
+            type: "fetched",
+            data: result,
+        });
+    }
+
+    /**
+     * 단일 객체 혹은 단일 객체의 배열을 받아서 저장하는 메소드.
+     */
+    public async create(
+        createDto: CreateDto<TargetEntity> | CreateDto<TargetEntity>[],
+        callback?: (data: TargetEntity | TargetEntity[]) => any,
+    ): Promise<IResponse> {
+        let result: TargetEntity | TargetEntity[];
+
+        if (Array.isArray(createDto)) {
+            const promises = createDto.map(async dto => {
+                return await this.repositoryMaster.save(dto);
+            });
+
+            result = (await Promise.all(promises)) as TargetEntity[];
+
+            if (callback) {
+                result = await callback(result);
+            }
+
+            // TODO: 부분 성공시, 어떻게 처리할지 고민해보기
+
+            return this.serviceResponse({ type: "created", data: result });
+        }
+
+        result = (await this.repositoryMaster.save(createDto)) as TargetEntity;
+
+        if (callback) {
+            result = await callback(result);
+        }
+
+        return this.serviceResponse({ type: "created", data: result });
+    }
+
+    /**
+     * id(Primary Key) 와 수정할 객체를 받아서 수정하는 메소드.
+     *
+     * @param id - 수정할 객체의 id, multi PK 를 사용할 경우 object 를 사용한다.
+     * @param updateDto - 수정할 객체의 데이터
+     * @param options - preload 옵션을 사용할 경우, preload: true 로 설정한다.
+     */
+    public async updateById(
+        id: number | object,
+        updateDto: UpdateDto<TargetEntity>,
+        options?: {
+            preload?: boolean;
+            callback?: (data: TargetEntity) => any;
+        },
+    ): Promise<IResponse> {
+        /* Update 된 객체를 반환해야하는 경우. */
+        if (options?.preload) {
+            if (typeof id === "number") (updateDto as any)._id = id;
+            if (typeof id === "object") updateDto = { ...id, ...updateDto };
+
+            const target = await this.repositoryMaster.preload(updateDto);
+
+            if (!target) {
+                return this.serviceResponse({ type: "notFound" });
+            }
+
+            const rawData: TargetEntity = await this.repositoryMaster.save(target);
+
+            let result = rawData;
+
+            if (options?.callback) {
+                result = await options.callback(rawData);
+            }
+
+            return this.serviceResponse({ type: "updated", data: result });
+        }
+
+        const result: UpdateResult = await this.repositoryMaster.update(id, updateDto);
+
+        if (result.affected === 0) {
+            return this.serviceResponse({ type: "notFound" });
+        }
+
+        return this.serviceResponse({ type: "updated" });
+    }
+
+    /**
+     * id(Primary Key)를 받아서 삭제하는 메소드.
+     * - id 값이 여러개일 경우, 콤마(,)로 구분하여 문자열로 전달한다.
+     * - id 가 숫자일 경우, 숫자로 전달한다.
+     * - id 가 객체일 경우, 객체(multi PK)로 전달한다.
+     * - id 가 객체의 배열일 경우, 배열로 전달한다.
+     *
+     * @param id - 삭제할 객체의 id, multi PK 를 사용할 경우 object 를 사용한다.
+     * @param options - recursive 옵션을 사용할 경우, recursive: true 로 설정한다.
+     *
+     * @see recursiveSoftDelete - 참조하는 테이블까지 softDelete 하는 메소드
+     */
+    public async deleteById(
+        id: number | string | UpdateDto<TargetEntity> | UpdateDto<TargetEntity>[],
+        options?: { recursive?: boolean }
+    ): Promise<IResponse> {
+        let target: number | object | string[];
+
+        // ex) id = '1,2,3'
+        if (typeof id === "string") target = id.split(",")
+            .map(id => id.trim())
+            .map(Number);
+
+        if (typeof id === "number" || typeof id === "object") target = id;
+
+        if (options?.recursive && (typeof id === "number" || Array.isArray(id))) {
+            return await this.recursiveSoftDelete(target as (number | number[]));
+        }
+
+        const result: UpdateResult = await this.repositoryMaster.softDelete(target);
+
+        if (result.affected === 0) {
+            return this.serviceResponse({ type: "notFound" });
+        }
+
+        return this.serviceResponse({ type: "deleted" });
+    }
+
+    /**
+     * 존재하는 데이터인지 확인 하는 메서드
+     *
+     * 배열인 경우 하나의 값이라도 존재하지 않는 경우 false 반환
+     * */
+    public async exists(id: number | object | string): Promise<boolean> {
+        let target: object;
+
+        if (typeof id === "number") target = { _id: id };
+
+        if (Array.isArray(id)) {
+            target = { _id: In(id) };
+
+            const count = await this.repositorySlave.count({ where: target });
+
+            return count === id.length;
+        }
+
+        if (typeof id === "object") target = id;
+
+        return this.repositorySlave.exists(target);
     }
 
     /**
@@ -210,5 +434,66 @@ export default abstract class BaseService<TargetEntity> extends EventEmitter {
         const hasNextPage: boolean = dataCount > offset + limit;
 
         return hasNextPage ? page + 1 : 1;
+    }
+
+    /**
+     * softDelete 를 recursive 하게 수행하는 메소드
+     *
+     * @memberof deleteById
+     */
+    protected async recursiveSoftDelete(
+        targetIds: number | number[],
+    ): Promise<IResponse> {
+
+        /* 내부 재귀 함수 */
+        const innerRecursiveSofeDelete = async (
+            masterSource: DataSource,
+            tableName: string,
+            targetIds: number[],
+            transactionManager: EntityManager
+        ) => {
+
+            /* 테이블명을 통해 해당 테이블의 메타데이터 조회 */
+            const metadata: EntityMetadata = masterSource.getMetadata(tableName);
+            const entity = metadata.target;
+
+            /* 참조하고있는 테이블 탐색 */
+            const relatedMetadatas = masterSource.entityMetadatas.filter(meta => {
+                return meta.foreignKeys.some(fk => fk.referencedEntityMetadata.tableName === tableName);
+            });
+
+            /* 해당테이블을 참조하고있는 테이블 순회(재귀) */
+            for (const relatedMetadata of relatedMetadatas) {
+                const relatedTableName = relatedMetadata.tableName;
+                const relatedTargetIds = (await masterSource.getRepository(relatedTableName)
+                    .find({ where: { [`${metadata.tableName}Id`]: In(targetIds) },
+                        withDeleted: true,
+                    })).map(target => target._id);
+
+                if (relatedTargetIds.length > 0) {
+                    await innerRecursiveSofeDelete(masterSource, relatedTableName, relatedTargetIds, transactionManager);
+                }
+            }
+
+            /* 가장 말단부터 삭제 */
+            await transactionManager.softDelete(entity, targetIds);
+        };
+
+        return await this.masterSource.transaction(async (transactionManager: EntityManager) => {
+
+            const tableName = this.masterSource.getMetadata(this.repositoryMaster.target).tableName;
+            const modifiedTargetIds = Array.isArray(targetIds) ? targetIds : [targetIds];
+            await innerRecursiveSofeDelete(
+                this.masterSource,
+                tableName,
+                modifiedTargetIds,
+                transactionManager
+            );
+
+            return this.serviceResponse({ type: "deleted" });
+
+        }).catch(err => {
+            return this.serviceResponse({ type: "invalid", message: err.message });
+        });
     }
 }
