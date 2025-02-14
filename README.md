@@ -87,12 +87,8 @@ yarn start
 ### Swagger UI 접속
 개발 서버 실행 후 아래 URL에서 API 문서를 확인할 수 있습니다:
 ```
-http://localhost:3000/api-docs
+http://host:port/api-docs
 ```
-
-### API 문서 업데이트
-- API 문서는 `/src/docs` 디렉토리에서 관리됩니다.
-- 새로운 API 엔드포인트 추가 시 해당 문서도 함께 업데이트해주세요.
 
 ## 라이선스
 MIT License
