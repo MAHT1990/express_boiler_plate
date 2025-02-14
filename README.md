@@ -14,6 +14,8 @@ Express.js 기반의 타입스크립트 보일러플레이트 프로젝트입니
 - TypeORM: ^0.3.20
 - Inversify: ^6.0.2
 - Winston: ^3.12.0
+- Class Validator: ^0.14.1
+- Class Transformer: ^0.5.1
 
 ## 프로젝트 구조
 ```
@@ -26,8 +28,21 @@ src/
 │   └── repositories/ # 리포지토리 클래스
 ├── docs/             # Swagger API 문서
 ├── loaders/          # 앱 초기화 로더
+├── middlewares/      # 미들웨어
+│   └── validators/   # 요청 유효성 검증
+│       ├── base.ts   # 기본 검증 클래스
+│       └── util.ts   # 검증 유틸리티
+├── services/         # 비즈니스 로직
+│   ├── post/        # 게시글 관련 서비스
+│   │   ├── dto/     # 데이터 전송 객체
+│   │   └── Post.service.ts
+│   └── comment/     # 댓글 관련 서비스
+│       ├── dto/     # 데이터 전송 객체
+│       └── Comment.service.ts
 ├── types/            # 타입 정의
-└── utils/            # 유틸리티 (로거 등)
+└── utils/            # 유틸리티
+    ├── logger/       # 로깅 시스템
+    └── response/     # 응답 포맷
 ```
 
 ## 주요 기능
@@ -37,36 +52,7 @@ src/
 - 🔒 CORS 설정 및 보안
 - 📊 Winston 기반 로깅 시스템
 - 📚 Swagger를 통한 API 문서화
-
-## 데이터베이스 스키마(Example)
-
-### Post 테이블
-```sql
-CREATE TABLE post_mysql_entity (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-```
-
-### Comment 테이블
-```sql
-CREATE TABLE comment_mysql_entity (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    content TEXT NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    post_id INT NOT NULL,
-    CONSTRAINT fk_comment_post 
-        FOREIGN KEY (post_id) 
-        REFERENCES post_mysql_entity(id)
-        ON DELETE CASCADE
-);
-```
+- ✅ Class-validator를 통한 DTO 유효성 검증
 
 ## 시작하기
 
