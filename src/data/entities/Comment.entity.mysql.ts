@@ -2,21 +2,31 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm"
 import { PostMySQLEntity } from "./Post.entity.mysql";
 
-@Entity()
+@Entity({ name: "comment_mysql_entity"})
 export class CommentMySQLEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({
+        name: "content",
+        type: "text",
+    })
     content: string;
 
-    @Column()
+    @Column({
+        name: "author",
+        type: "varchar",
+    })
     author: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        name: "created_at",
+    })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        name: "updated_at",
+    })
     updatedAt: Date;
     
     @Column()

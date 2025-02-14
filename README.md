@@ -9,7 +9,7 @@ Express.js 기반의 타입스크립트 보일러플레이트 프로젝트입니
 - Yarn: 1.22.22
 
 ### Core Dependencies
-- Express.js: ^4.18.3
+- Express.js: ^4.19.2
 - TypeScript: ^5.4.2
 - TypeORM: ^0.3.20
 - Inversify: ^6.0.2
@@ -20,29 +20,30 @@ Express.js 기반의 타입스크립트 보일러플레이트 프로젝트입니
 ## 프로젝트 구조
 ```
 src/
-├── configs/           # 앱 설정 (cors, database 등)
-├── containers/        # Inversify DI 컨테이너
-│   └── symbols/      # DI 심볼 정의
-├── data/
-│   ├── entities/     # TypeORM 엔티티
-│   └── repositories/ # 리포지토리 클래스
-├── docs/             # Swagger API 문서
-├── loaders/          # 앱 초기화 로더
-├── middlewares/      # 미들웨어
-│   └── validators/   # 요청 유효성 검증
-│       ├── base.ts   # 기본 검증 클래스
-│       └── util.ts   # 검증 유틸리티
-├── services/         # 비즈니스 로직
-│   ├── post/        # 게시글 관련 서비스
-│   │   ├── dto/     # 데이터 전송 객체
+├── configs/               # 앱 설정 (cors, database 등)
+├── constants/             # 상수 정의
+├── containers/            # Inversify DI 컨테이너
+│   └── symbols/           # DI 심볼 정의
+├── data/                  # 데이터베이스 관련 파일
+│   ├── entities/          # TypeORM 엔티티
+│   └── repositories/      # 리포지토리 클래스
+├── docs/                  # Swagger API 문서
+├── loaders/               # 앱 초기화 로더
+├── middlewares/           # 미들웨어
+│   └── validators/        # 요청 유효성 검증
+│       ├── base.ts        # 기본 검증 클래스
+│       └── util.ts        # 검증 유틸리티
+├── services/              # 비즈니스 로직
+│   ├── post/              # 게시글 관련 서비스
+│   │   ├── dto/           # 데이터 전송 객체
 │   │   └── Post.service.ts
-│   └── comment/     # 댓글 관련 서비스
-│       ├── dto/     # 데이터 전송 객체
+│   └── comment/           # 댓글 관련 서비스
+│       ├── dto/           # 데이터 전송 객체
 │       └── Comment.service.ts
-├── types/            # 타입 정의
-└── utils/            # 유틸리티
-    ├── logger/       # 로깅 시스템
-    └── response/     # 응답 포맷
+├── types/                 # 타입 정의
+└── utils/                 # 유틸리티
+    ├── logger/            # 로깅 시스템
+    └── response/          # 응답 포맷
 ```
 
 ## 주요 기능
