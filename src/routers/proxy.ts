@@ -57,8 +57,11 @@ export const createRouterProxy = (
         addionalMiddlewares
     } = option;
 
-    /* Resource명 추출 */
-    const dirs = curDirString.split("/");
+    /* Resource명 추출 
+     * - 구분자가 \\(window), /(linux) 인 경우를 구분한다.
+     */
+    const separator = process.platform === "win32" ? "\\" : "/";
+    const dirs = curDirString.split(separator);
     const resourceName = dirs.pop();
 
     /* resourcePath
@@ -98,7 +101,6 @@ export const createRouterProxy = (
 
     /* 추가 middlewares 설정 */
     if (addionalMiddlewares) argArr.push(...addionalMiddlewares);
-
 
     /* parentResourceId middleware 설정 */
     if (parentResourceId) {
@@ -341,7 +343,7 @@ export const createRouterProxy = (
 
 
 export const createRequestHandler = (
-    action: RequestHandler,
+    action: (req: Request, res: Response) => Promise<IResponse>,
     option?: {
         raw?: boolean;
         redirect?: boolean | ((param: any) => boolean);
@@ -379,7 +381,7 @@ export const createRequestHandler = (
                 }
                 
                 /* Default Response: ServiceResponse */
-                res.status(result.status).json({
+                return res.status(result.status).json({
                     code: result.code,
                     message: result.message,
                     data: result.data
@@ -403,5 +405,5 @@ export const createRequestHandler = (
     Reflect.defineMetadata("middlewareDescription", option?.description, proxy);
     Reflect.defineMetadata("deprecated", option?.deprecated, proxy);
 
-    return proxy;
+    return proxy as unknown as RequestHandler;
 };
