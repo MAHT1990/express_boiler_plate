@@ -27,7 +27,7 @@
       "class-validator": "^0.14.1",
       "cors": "^2.8.5",
       "dotenv": "^16.4.7",
-      "express": "^4.21.2",
+      "express": "4.19.2",
       "inversify": "^6.2.2",
       "mysql": "^2.14.1",
       "reflect-metadata": "^0.1.13",
