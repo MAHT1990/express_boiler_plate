@@ -8,13 +8,13 @@ import { servicesContainer } from "../../containers/services.container";
 import { SERVICES } from "../../containers/symbols/services";
 
 /* VALIDATORS */
-import { validateFindPost, validateCreatePost, validateUpdatePost } from "../../middlewares/validators/entities/Post/validator";
+import { validateFindComment, validateCreateComment, validateUpdateComment } from "../../middlewares/validators/entities/Comment/validator";
 
 /* SERVICES */
-import { PostService } from "../../services/Post";
+import { CommentService } from "../../services/Comment";
 
 /* ENTITIES */
-import { PostMySQLEntity } from "../../data/entities/Post.entity.mysql";
+import { CommentMySQLEntity } from "../../data/entities/Comment.entity.mysql";
 
 /* INTERFACES */
 import { FindDto } from "../../types/dto/base.dto";
@@ -29,27 +29,27 @@ export default (parentRouter: Router) => {
         parentRouter,
     });
 
-    childRouter.get("/", validateFindPost, createRequestHandler(async (req: Request, res: Response) => {
-        const service = servicesContainer.get<PostService>(SERVICES.PostService);
+    childRouter.get("/", validateFindComment, createRequestHandler(async (req: Request, res: Response) => {
+        const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.findBy({ queries: req.query })
     }));
 
-    childRouter.post("/", validateCreatePost, createRequestHandler(async (req: Request, res: Response) => {
-        const service = servicesContainer.get<PostService>(SERVICES.PostService);
+    childRouter.post("/", validateCreateComment, createRequestHandler(async (req: Request, res: Response) => {
+        const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.create({
             data: req.body,
         })
     }));
 
-    childRouter.get("/:id", validateFindPost, createRequestHandler(async (req: Request, res: Response) => {
-        const service = servicesContainer.get<PostService>(SERVICES.PostService);
+    childRouter.get("/:id", validateFindComment, createRequestHandler(async (req: Request, res: Response) => {
+        const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.findById({
             id: req.params.id,
         })
     }));
 
-    childRouter.put("/:id", validateUpdatePost, createRequestHandler(async (req: Request, res: Response) => {
-        const service = servicesContainer.get<PostService>(SERVICES.PostService);
+    childRouter.put("/:id", validateUpdateComment, createRequestHandler(async (req: Request, res: Response) => {
+        const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.updateById(
             Number(req.params.id),
             req.body,
@@ -57,9 +57,10 @@ export default (parentRouter: Router) => {
     }));
 
     childRouter.delete("/:id", createRequestHandler(async (req: Request, res: Response) => {
-        const service = servicesContainer.get<PostService>(SERVICES.PostService);
+        const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.deleteById(
             Number(req.params.id),
         )
     }));
 }
+
