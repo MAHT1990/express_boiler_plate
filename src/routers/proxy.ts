@@ -174,7 +174,7 @@ export const createRouterProxy = (
                             deprecated,
                             summary,
                             description,
-                            operationId: `[${prop.toUpperCase()}]${totalPath}`,
+                            operationId: `[${prop.toUpperCase()}]${endPoint}`,
                             responses: {},
                             security: [],
                             parameters: [],
@@ -352,7 +352,7 @@ export const createRequestHandler = (
         description?: any;
     }
 ): RequestHandler => {
-    const proxy = new Proxy(action, {
+    const requestHandlerProxy = new Proxy(action, {
         async apply(method, thisArg, argArray: [Request, Response]) {
             const [ req, res ] = argArray;
 
@@ -400,10 +400,10 @@ export const createRequestHandler = (
 
 
     /* MetaData 설정 */
-    Reflect.defineMetadata("middlewareType", "requestHandler", proxy);
-    Reflect.defineMetadata("middlewareSummary", option?.summary, proxy);
-    Reflect.defineMetadata("middlewareDescription", option?.description, proxy);
-    Reflect.defineMetadata("deprecated", option?.deprecated, proxy);
+    Reflect.defineMetadata("middlewareType", "requestHandler", requestHandlerProxy);
+    Reflect.defineMetadata("middlewareSummary", option?.summary, requestHandlerProxy);
+    Reflect.defineMetadata("middlewareDescription", option?.description, requestHandlerProxy);
+    Reflect.defineMetadata("deprecated", option?.deprecated, requestHandlerProxy);
 
-    return proxy as unknown as RequestHandler;
+    return requestHandlerProxy as unknown as RequestHandler;
 };
