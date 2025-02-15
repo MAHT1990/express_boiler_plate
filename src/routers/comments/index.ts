@@ -29,38 +29,58 @@ export default (parentRouter: Router) => {
         parentRouter,
     });
 
+    /* 댓글 조회 */
     childRouter.get("/", validateFindComment, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.findBy({ queries: req.query })
+    }, {
+        summary: "댓글 조회",
+        description: "댓글을 조회합니다.",
     }));
 
+    /* 댓글 생성 */
     childRouter.post("/", validateCreateComment, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.create({
             data: req.body,
         })
+    }, {
+        summary: "댓글 생성",
+        description: "댓글을 생성합니다.",
     }));
 
-    childRouter.get("/:id", validateFindComment, createRequestHandler(async (req: Request, res: Response) => {
+    /* 댓글 상세 조회 */
+    childRouter.get("/:commentId", validateFindComment, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.findById({
-            id: req.params.id,
+            id: req.params.commentId,
         })
+    }, {
+        summary: "댓글 상세 조회",
+        description: "댓글을 상세하게 조회합니다.",
     }));
 
-    childRouter.put("/:id", validateUpdateComment, createRequestHandler(async (req: Request, res: Response) => {
+    /* 댓글 수정 */
+    childRouter.put("/:commentId", validateUpdateComment, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.updateById(
-            Number(req.params.id),
+            Number(req.params.commentId),
             req.body,
         )
+    }, {
+        summary: "댓글 수정",
+        description: "댓글을 수정합니다.",
     }));
 
-    childRouter.delete("/:id", createRequestHandler(async (req: Request, res: Response) => {
+    /* 댓글 삭제 */
+    childRouter.delete("/:commentId", createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<CommentService>(SERVICES.CommentService);
         return await service.deleteById(
-            Number(req.params.id),
+            Number(req.params.commentId),
         )
+    }, {
+        summary: "댓글 삭제",
+        description: "댓글을 삭제합니다.",
+        deprecated: true,
     }));
 }
-

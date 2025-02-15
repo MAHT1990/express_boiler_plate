@@ -29,37 +29,58 @@ export default (parentRouter: Router) => {
         parentRouter,
     });
 
+    /* 게시글 조회 */
     childRouter.get("/", validateFindPost, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<PostService>(SERVICES.PostService);
         return await service.findBy({ queries: req.query })
+    }, {
+        summary: "게시글 조회",
+        description: "게시글을 조회합니다.",
     }));
 
+    /* 게시글 생성 */
     childRouter.post("/", validateCreatePost, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<PostService>(SERVICES.PostService);
         return await service.create({
             data: req.body,
         })
+    }, {
+        summary: "게시글 생성",
+        description: "게시글을 생성합니다.",
     }));
 
-    childRouter.get("/:id", validateFindPost, createRequestHandler(async (req: Request, res: Response) => {
+    /* 게시글 상세 조회 */
+    childRouter.get("/:postId", validateFindPost, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<PostService>(SERVICES.PostService);
         return await service.findById({
-            id: req.params.id,
+            id: req.params.postId,
         })
+    }, {
+        summary: "게시글 상세 조회",
+        description: "게시글을 상세하게 조회합니다.",
     }));
 
-    childRouter.put("/:id", validateUpdatePost, createRequestHandler(async (req: Request, res: Response) => {
+    /* 게시글 수정 */
+    childRouter.put("/:postId", validateUpdatePost, createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<PostService>(SERVICES.PostService);
         return await service.updateById(
-            Number(req.params.id),
+            Number(req.params.postId),
             req.body,
         )
+    }, {
+        summary: "게시글 수정",
+        description: "게시글을 수정합니다.",
     }));
 
-    childRouter.delete("/:id", createRequestHandler(async (req: Request, res: Response) => {
+    /* 게시글 삭제 */
+    childRouter.delete("/:postId", createRequestHandler(async (req: Request, res: Response) => {
         const service = servicesContainer.get<PostService>(SERVICES.PostService);
         return await service.deleteById(
-            Number(req.params.id),
+            Number(req.params.postId),
         )
+    }, {
+        summary: "게시글 삭제",
+        description: "게시글을 삭제합니다.",
+        deprecated: true,
     }));
 }
