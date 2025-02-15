@@ -26,8 +26,6 @@ export class CorsConfig implements ICorsConfig {
     public getOptions(): CorsOptions {
         return {
             origin: (origin, callback) => {
-                console.log("Request from origin:", origin);
-
                 if (
                     !origin ||
                     this.allowedOrigins.indexOf(origin) !== -1 ||
