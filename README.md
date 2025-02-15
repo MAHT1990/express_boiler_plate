@@ -1,11 +1,12 @@
 # Express Boilerplate
 
-TypeScript 기반의 Express.js + TypeORM Boilerplate 프로젝트.
+**TypeScript 기반의 Express.js + TypeORM Boilerplate 프로젝트.**
 
  Express Router 의 확장(Proxy) 을 통하여
  - class-validator 기반의 요청 유효성 검증
  - RequestHandler 를 통한 요청 처리
  - Swagger 문서 자동 생성
+
 의 통합을 목적으로 작성되었습니다.
 
 ## 주요 기능
