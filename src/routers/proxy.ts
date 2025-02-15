@@ -20,7 +20,6 @@ const ROUTER_ROOT = "routers";
 const HTTP_METHODS = ["get", "post", "put", "delete", "patch"];
 
 
-
 /**
  * createRouterProxy
  * - router를 Proxy로 감싸는 함수
@@ -65,8 +64,8 @@ export const createRouterProxy = (
     const resourceName = dirs.pop();
 
     /* resourcePath
-     * - parentResourceId가 없는 경우: resourcePath = <resourceName>
-     * - parentResourceId가 있는 경우: resourcePath = <parentResourceId>/<resourceName>
+     * - parentResourceId가 없는 경우 (ex. /posts): resourcePath = <resourceName>
+     * - parentResourceId가 있는 경우 (ex. /:postId/comments): resourcePath = <parentResourceId>/<resourceName>
      */
     const resourcePath = parentResourceId
         ? `/:${parentResourceId}/${resourceName}`
@@ -74,7 +73,7 @@ export const createRouterProxy = (
 
     /* totalPath
      * - 최상위 Router 인 경우: totalPath = ""
-     * - 자식 Router 인 경우: totalPath = <parentRouter의 totalPath>/<resourcePath>
+     * - 자식 Router 인 경우: totalPath(ex. /posts/:postId/comments) = <parentRouter의 totalPath>/<resourcePath>
      */
     let totalPath = "";
     if (parentRouter) {
@@ -93,16 +92,18 @@ export const createRouterProxy = (
         }
     }
 
-    /* parentRouter 에 router 추가 */
+    /* Router 설정
+     * 1. path 추가 (resourcePath)
+     * 2. 추가 middlewares 설정
+     * 3. parentResourceId middleware 설정 - req.headers에 params 값 복사
+     * 4. ChildRouter 설정
+     * 5. parentRouter 또는 최상위 Router에 router 추가
+     */
     const argArr = [];
-
-    /* path 추가 */
     argArr.push(resourcePath);
 
-    /* 추가 middlewares 설정 */
     if (addionalMiddlewares) argArr.push(...addionalMiddlewares);
 
-    /* parentResourceId middleware 설정 */
     if (parentResourceId) {
         argArr.push((req: Request, res: Response, next: NextFunction) => {
             req.headers[parentResourceId] = req.params[parentResourceId];
@@ -110,13 +111,12 @@ export const createRouterProxy = (
         });
     }
 
-    /* ChildRouter 설정 */
     argArr.push(router);
     
-    /* parentRouter OR 최상위 Router 에 router 추가 */
     if (parentRouter) parentRouter.use(...argArr);
     else router.use(...argArr);
 
+    /* Router Proxy 설정 */
     const routerProxy = new Proxy(router, {
         get(router, prop, receiver) {
             if (
