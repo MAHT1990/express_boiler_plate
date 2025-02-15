@@ -9,8 +9,12 @@ import { SERVICES } from "./symbols/services";
 
 /* SERVICES */
 import { PostService } from "../services/Post";
+import { CommentService } from "../services/Comment";
 
 
+/**
+ * 서비스 컨테이너
+ */
 export class ServicesContainer extends Container {
     public constructor(
         repositoriesContainer: RepositoriesContainer,
@@ -22,6 +26,7 @@ export class ServicesContainer extends Container {
 
     private initializeBindings(): void {
         this.bind<PostService>(SERVICES.PostService).to(PostService);
+        this.bind<CommentService>(SERVICES.CommentService).to(CommentService);
     }
 }
 
