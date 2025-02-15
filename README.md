@@ -1,6 +1,20 @@
 # Express Boilerplate
 
-Express.js 기반의 타입스크립트 보일러플레이트 프로젝트입니다.
+TypeScript 기반의 Express.js + TypeORM Boilerplate 프로젝트.
+
+## 주요요 기능
+ Express Router 의 확장(Proxy) 을 통하여
+ - class-validator 기반의 요청 유효성 검증
+ - RequestHandler 를 통한 요청 처리
+ - Swagger 문서 자동 생성
+의 통합을 목적으로 작성되었습니다.
+
+- 📝 TypeScript 기반 타입 안정성
+- 🎯 Inversify를 통한 의존성 주입
+- 🗃️ TypeORM을 이용한 데이터베이스 관리
+- ✅ Class-validator를 통한 DTO 유효성 검증
+- 📚 Swagger를 통한 API 문서화
+- 📊 Winston 기반 로깅 시스템
 
 ## 기술 스택
 
@@ -45,15 +59,6 @@ src/
     ├── logger/            # 로깅 시스템
     └── response/          # 응답 포맷
 ```
-
-## 주요 기능
-- 📝 TypeScript 기반 타입 안정성
-- 🎯 Inversify를 통한 의존성 주입
-- 🗃️ TypeORM을 이용한 데이터베이스 관리
-- 🔒 CORS 설정 및 보안
-- 📊 Winston 기반 로깅 시스템
-- 📚 Swagger를 통한 API 문서화
-- ✅ Class-validator를 통한 DTO 유효성 검증
 
 ## 시작하기
 
