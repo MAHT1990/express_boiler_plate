@@ -1,11 +1,18 @@
 /* CONSTANTS */
-const REQUEST_BODY_METADATA_KEY = "bodyMetadata";
-const QUERY_METADATA_KEY = "queryMetadata";
+const REQUEST_BODY_METADATA_KEY = "bodyMetadata:";
+const QUERY_METADATA_KEY = "queryMetadata:";
 
 
 /**
  * SWAGGER API 문서를 위한 Decorator
- * - BaseSchema 클래스를 상속받은 클래스의 프로퍼티에 사용
+ * - BaseSchema 클래스를 상속받은 클래스의 프로퍼티에 사용.
+ * 
+ * 인스턴스의 metadata내에 bodyMetadata:propertyKey 키로 저장.  
+ * 
+ * @param params.type - 데이터 타입
+ * @param params.description - 설명
+ * @param params.example - 예시
+ * @param params.required - 필수 여부
  */
 export function SwaggerRequestBody(
     params: {
@@ -16,7 +23,7 @@ export function SwaggerRequestBody(
     }) {
         params.required = !!params.required;
         return function (target: object, propertyKey: string) {
-            Reflect.defineMetadata(`${REQUEST_BODY_METADATA_KEY}:${propertyKey}`, params, target);
+            Reflect.defineMetadata(`${REQUEST_BODY_METADATA_KEY}${propertyKey}`, params, target);
         };
 }
 
@@ -24,7 +31,9 @@ export function SwaggerRequestBody(
 /**
  * Swagger API 문서를 위한 데코레이터 함수
  * - BaseSchema 클래스를 상속받은 클래스의 프로퍼티에 사용.
- *
+ * 
+ * 인스턴스의 metadata내에 queryMetadata:propertyKey 키로 저장.  
+ * 
  * @param params.type - 데이터 타입
  * @param params.description - 설명
  * @param params.example - 예시
