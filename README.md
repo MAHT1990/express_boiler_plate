@@ -2,13 +2,13 @@
 
 TypeScript 기반의 Express.js + TypeORM Boilerplate 프로젝트.
 
-## 주요요 기능
  Express Router 의 확장(Proxy) 을 통하여
  - class-validator 기반의 요청 유효성 검증
  - RequestHandler 를 통한 요청 처리
  - Swagger 문서 자동 생성
 의 통합을 목적으로 작성되었습니다.
 
+## 주요 기능
 - 📝 TypeScript 기반 타입 안정성
 - 🎯 Inversify를 통한 의존성 주입
 - 🗃️ TypeORM을 이용한 데이터베이스 관리
