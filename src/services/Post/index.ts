@@ -26,7 +26,7 @@ export class PostService extends BaseService<PostMySQLEntity> {
             repositoryMaster: repository.master,
             repositorySlave: repository.slave,
             serviceResponse: postResponse,
-        })
+        });
     }
 }
 
