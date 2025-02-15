@@ -36,10 +36,14 @@ export class CommentMySQLEntity {
     postId: number;
 
     /* RELATIONSHIP */
-    @ManyToOne(() => PostMySQLEntity, post => post.comments, {
+    @ManyToOne(() => PostMySQLEntity, post => post.id, {
         onDelete: 'CASCADE',
     })
-    @JoinColumn({ name: 'postId' })
+    @JoinColumn({
+        name: 'post_id',
+        referencedColumnName: 'id',
+        foreignKeyConstraintName: 'fk_comment_post',
+    })
     post: PostMySQLEntity;
 
 } 
