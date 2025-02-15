@@ -29,9 +29,13 @@ export class CommentMySQLEntity {
     })
     updatedAt: Date;
     
-    @Column()
+    @Column({
+        name: "post_id",
+        type: "int",
+    })
     postId: number;
 
+    /* RELATIONSHIP */
     @ManyToOne(() => PostMySQLEntity, post => post.comments, {
         onDelete: 'CASCADE',
     })
